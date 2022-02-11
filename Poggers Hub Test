@@ -1,0 +1,1435 @@
+   local VLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/vep1032/VepStuff/main/VL"))()
+
+local s = VLib:Window("Poggers Hub Alpha Testing", "Arsenal", "POG")
+
+local SkinSS = s:Tab("Skins")
+local MeleeSS = s:Tab("Melees")
+local EmoteSS = s:Tab("Emotes")
+local FeSS = s:Tab("FE Scripts")
+local MiscS = s:Tab("Misc Scripts")
+local ScriptHubS = s:Tab("Script Hubs")
+local CreditSS = s:Tab("Credits")
+
+
+SkinSS:Dropdown("Skins in Locker and in Game(Click in Game)", {"Delinquent With Drip","No Banana Monke","Shooker Man","Myboe"}, function(arg)
+	if arg == "Delinquent With Drip" then
+			    game.Players.LocalPlayer.Character.Shirt.ShirtTemplate = "http://www.roblox.com/asset/?id=6311929085"
+game.Players.LocalPlayer.Character.Pants.PantsTemplate = "http://www.roblox.com/asset/?id=6311929085"
+
+
+game.Players.LocalPlayer.Ragdoll.Shirt.ShirtTemplate = "http://www.roblox.com/asset/?id=6311929085"
+game.Players.LocalPlayer.Ragdoll.Pants.PantsTemplate = "http://www.roblox.com/asset/?id=6311929085"
+
+
+local vm = game:GetService("ReplicatedStorage").Viewmodels.Arms.Delinquent
+vm.Name = "Holder"
+local toName = game:GetService("ReplicatedStorage").Viewmodels.Arms["Segg with Drip"]
+toName.Name = "Delinquent"
+
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Shirt.ShirtTemplate = "http://www.roblox.com/asset/?id=6311929085"
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Pants.PantsTemplate = "http://www.roblox.com/asset/?id=6311929085"
+
+game:GetService("ReplicatedStorage").FavoriteWeapons.Delinquent.Value = "Very Long Bat"
+game:GetService("ReplicatedStorage").ItemData.Images.Skins.Delinquent.Quality.Value = "Bundle"
+
+local Config =
+{
+    ProtectedName = "Delinquent with Drip", --What the protected name should be called. (Go to line 51)
+    OtherPlayers = false, --If other players should also have protected names.
+    OtherPlayersTemplate = "NameProtect", --Template for other players protected name (ex: "NamedProtect" will turn into "NameProtect1" for first player and so on)
+    RenameTextBoxes = false, --If TextBoxes should be renamed. (could cause issues with admin guis/etc)
+    UseFilterPadding = false, --If filtePeach name should be the same size as a regular name.
+    FilterPad = " ", --Character used to filter pad.
+    UseMetatableHook = true, --Use metatable hook to increase chance of filtering. (is not supported on wrappers like bleu)
+    UseAggressiveFiltering = true --Use aggressive property renaming filter. (renames a lot more but at the cost of lag)
+}
+
+local ProtectedNames = {}
+local Counter = 1
+if Config.OtherPlayers then
+    for I, V in pairs(game.Players:GetPlayers()) do
+        local Filter = Config.OtherPlayersTemplate .. tostring(Counter)
+        if Config.UseFilterPadding then
+            if string.len(Filter) > string.len(V.Name) then
+                Filter = string.sub(Filter, 1, string.len(V.Name))
+            elseif string.len(Filter) < string.len(V.Name) then
+                local Add = string.len(V.Name) - string.len(Filter)
+                for I=1,Add do
+                    Filter = Filter .. Config.FilterPad
+                end
+            end
+        end
+        ProtectedNames[V.Name] = Filter
+        Counter = Counter + 1
+    end
+
+    game.Players.PlayerAdded:connect(function(Player)
+        local Filter = Config.OtherPlayersTemplate .. tostring(Counter)
+        if Config.UseFilterPadding then
+            if string.len(Filter) > string.len(V.Name) then
+                Filter = string.sub(Filter, 1, string.len(V.Name))
+            elseif string.len(Filter) < string.len(V.Name) then
+                local Add = string.len(V.Name) - string.len(Filter)
+                for I=1,Add do
+                    Filter = Filter .. Config.FilterPad
+                end
+            end
+        end
+        ProtectedNames[Player.Name] = Filter
+        Counter = Counter + 1
+    end)
+end
+
+local LPName = "Delinquent" -- hi, hi :D
+local IsA = game.IsA
+
+if Config.UseFilterPadding then
+    if string.len(Config.ProtectedName) > string.len(LPName) then
+        Config.ProtectedName = string.sub(Config.ProtectedName, 1, string.len(LPName))
+    elseif string.len(Config.ProtectedName) < string.len(LPName) then
+        local Add = string.len(LPName) - string.len(Config.ProtectedName)
+        for I=1,Add do
+            Config.ProtectedName = Config.ProtectedName .. Config.FilterPad
+        end
+    end
+end
+
+local function FilterString(S)
+    local RS = S
+    if Config.OtherPlayers then
+        for I, V in pairs(ProtectedNames) do
+            RS = string.gsub(RS, I, V)
+        end
+    end
+    RS = string.gsub(RS, LPName, Config.ProtectedName)
+    return RS
+end
+
+for I, V in pairs(game:GetDescendants()) do
+    if Config.RenameTextBoxes then
+        if IsA(V, "TextLabel") or IsA(V, "TextButton") or IsA(V, "TextBox") then
+            V.Text = FilterString(V.Text)
+
+            if Config.UseAggressiveFiltering then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    else
+        if IsA(V, "TextLabel") or IsA(V, "TextButton") then
+            V.Text = FilterString(V.Text)
+
+            if Config.UseAggressiveFiltering then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    end
+end
+
+if Config.UseAggressiveFiltering then
+    game.DescendantAdded:connect(function(V)
+        if Config.RenameTextBoxes then
+            if IsA(V, "TextLabel") or IsA(V, "TextButton") or IsA(V, "TextBox") then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        else
+            if IsA(V, "TextLabel") or IsA(V, "TextButton") then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    end)
+end
+
+if Config.UseMetatableHook then
+    if not getrawmetatable then
+        error("GetRawMetaTable not found")
+    end
+
+    local NewCC = function(F)
+        if newcclosure then return newcclosure(F) end
+        return F
+    end
+
+    local SetRO = function(MT, V)
+        if setreadonly then return setreadonly(MT, V) end
+        if not V and make_writeable then return make_writeable(MT) end
+        if V and make_readonly then return make_readonly(MT) end
+        error("No setreadonly found")
+    end
+
+    local MT = getrawmetatable(game)
+    local OldNewIndex = MT.__newindex
+    SetRO(MT, false)
+
+    MT.__newindex = NewCC(function(T, K, V)
+        if Config.RenameTextBoxes then
+            if (IsA(T, "TextLabel") or IsA(T, "TextButton") or IsA(T, "TextBox")) and K == "Text" and type(V) == "string" then
+                return OldNewIndex(T, K, FilterString(V))
+            end
+        else
+            if (IsA(T, "TextLabel") or IsA(T, "TextButton")) and K == "Text" and type(V) == "string" then
+                return OldNewIndex(T, K, FilterString(V))
+            end
+        end
+
+        return OldNewIndex(T, K, V)
+    end)
+
+    SetRO(MT, true)
+end
+
+	elseif arg == "No Banana Monke" then
+		  game.Players.LocalPlayer.Character.NerdHair:Destroy()
+game.Players.LocalPlayer.Character.FakeHead.Mesh.MeshId = "http://www.roblox.com/asset/?id=13636429"
+game.Players.LocalPlayer.Character.FakeHead.Mesh.TextureId = "http://www.roblox.com/asset/?id=13636445"
+game.Players.LocalPlayer.Character.Cap.Handle.Mesh.MeshId = "http://www.roblox.com/asset/?id="
+game.Players.LocalPlayer.Character.Cap.Handle.Mesh.Scale=Vector3.new(4.3, 4.3, 4.3)
+game.Players.LocalPlayer.Character.FakeHead.Mesh.Scale=Vector3.new(1.25, 1.25, 1.25)
+game.Players.LocalPlayer.Character.FakeHead.face:Destroy()
+game.Players.LocalPlayer.Character.Pants.PantsTemplate = "rbxassetid://1983315399"
+game.Players.LocalPlayer.Character.Shirt.ShirtTemplate = "http://www.roblox.com/asset/?id=2177773400"
+
+game.Players.LocalPlayer.Ragdoll.NerdHair:Destroy()
+game.Players.LocalPlayer.Ragdoll.Head.Mesh.MeshId = "http://www.roblox.com/asset/?id=13636429"
+game.Players.LocalPlayer.Ragdoll.Head.Mesh.TextureId = "http://www.roblox.com/asset/?id=13636445"
+game.Players.LocalPlayer.Ragdoll.Cap.Handle.Mesh.MeshId = "http://www.roblox.com/asset/?id="
+game.Players.LocalPlayer.Ragdoll.Cap.Handle.Mesh.Scale=Vector3.new(4.3, 4.3, 4.3)
+game.Players.LocalPlayer.Ragdoll.Head.Mesh.Scale=Vector3.new(1.25, 1.25, 1.25)
+game.Players.LocalPlayer.Ragdoll.Head.face:Destroy()
+game.Players.LocalPlayer.Ragdoll.Pants.PantsTemplate = "rbxassetid://1983315399"
+game.Players.LocalPlayer.Ragdoll.Shirt.ShirtTemplate = "http://www.roblox.com/asset/?id=2177773400"
+game.Players.LocalPlayer.Ragdoll.Head.Mesh.OriginalSize:Destroy()
+game.Players.LocalPlayer.Ragdoll.Cap.Handle.OriginalSize:Destroy()
+
+game.Players.LocalPlayer.Character.RightUpperArm.BrickColor = BrickColor.new("Reddish brown")
+game.Players.LocalPlayer.Character.RightLowerArm.BrickColor = BrickColor.new("Reddish brown")
+game.Players.LocalPlayer.Character.RightHand.BrickColor = BrickColor.new("Reddish brown")
+game.Players.LocalPlayer.Character.LeftUpperArm.BrickColor = BrickColor.new("Reddish brown")
+game.Players.LocalPlayer.Character.LeftLowerArm.BrickColor = BrickColor.new("Reddish brown")
+game.Players.LocalPlayer.Character.LeftHand.BrickColor = BrickColor.new("Reddish brown")
+
+
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.NerdHair:Destroy()
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Head.Mesh.MeshId = "http://www.roblox.com/asset/?id=13636429"
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Head.Mesh.TextureId = "http://www.roblox.com/asset/?id=13636445"
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Cap.Handle.Mesh.MeshId = "http://www.roblox.com/asset/?id="
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Cap.Handle.Mesh.Scale=Vector3.new(4.3, 4.3, 4.3)
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Head.Mesh.Scale=Vector3.new(1.25, 1.25, 1.25)
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Head.Mesh.OriginalSize:Destroy()
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Cap.Handle.OriginalSize:Destroy()
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Head.face:Destroy()
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Pants.PantsTemplate = "rbxassetid://1983315399"
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Shirt.ShirtTemplate = "http://www.roblox.com/asset/?id=2177773400"
+
+local vm = game:GetService("ReplicatedStorage").Viewmodels.Arms.Delinquent
+vm.Name = "Holder"
+local toName = game:GetService("ReplicatedStorage").Viewmodels.Arms["Monky"]
+toName.Name = "Delinquent"
+
+game:GetService("ReplicatedStorage").FavoriteWeapons.Delinquent.Value = "Potassium Power"
+
+game:GetService("ReplicatedStorage").ItemData.Images.Skins.Delinquent.Quality.Value = "Promo"
+
+local Config =
+{
+    ProtectedName = "Naked Monke", --What the protected name should be called. (Go to line 51)
+    OtherPlayers = false, --If other players should also have protected names.
+    OtherPlayersTemplate = "NameProtect", --Template for other players protected name (ex: "NamedProtect" will turn into "NameProtect1" for first player and so on)
+    RenameTextBoxes = false, --If TextBoxes should be renamed. (could cause issues with admin guis/etc)
+    UseFilterPadding = false, --If filtered name should be the same size as a regular name.
+    FilterPad = " ", --Character used to filter pad.
+    UseMetatableHook = true, --Use metatable hook to increase chance of filtering. (is not supported on wrappers like bleu)
+    UseAggressiveFiltering = true --Use aggressive property renaming filter. (renames a lot more but at the cost of lag)
+}
+
+local ProtectedNames = {}
+local Counter = 1
+if Config.OtherPlayers then
+    for I, V in pairs(game:GetService("Players"):GetPlayers()) do
+        local Filter = Config.OtherPlayersTemplate .. tostring(Counter)
+        if Config.UseFilterPadding then
+            if string.len(Filter) > string.len(V.Name) then
+                Filter = string.sub(Filter, 1, string.len(V.Name))
+            elseif string.len(Filter) < string.len(V.Name) then
+                local Add = string.len(V.Name) - string.len(Filter)
+                for I=1,Add do
+                    Filter = Filter .. Config.FilterPad
+                end
+            end
+        end
+        ProtectedNames[V.Name] = Filter
+        Counter = Counter + 1
+    end
+
+    game:GetService("Players").PlayerAdded:connect(function(Player)
+        local Filter = Config.OtherPlayersTemplate .. tostring(Counter)
+        if Config.UseFilterPadding then
+            if string.len(Filter) > string.len(V.Name) then
+                Filter = string.sub(Filter, 1, string.len(V.Name))
+            elseif string.len(Filter) < string.len(V.Name) then
+                local Add = string.len(V.Name) - string.len(Filter)
+                for I=1,Add do
+                    Filter = Filter .. Config.FilterPad
+                end
+            end
+        end
+        ProtectedNames[Player.Name] = Filter
+        Counter = Counter + 1
+    end)
+end
+
+local LPName = "Delinquent" -- hi, hi :D
+local IsA = game.IsA
+
+if Config.UseFilterPadding then
+    if string.len(Config.ProtectedName) > string.len(LPName) then
+        Config.ProtectedName = string.sub(Config.ProtectedName, 1, string.len(LPName))
+    elseif string.len(Config.ProtectedName) < string.len(LPName) then
+        local Add = string.len(LPName) - string.len(Config.ProtectedName)
+        for I=1,Add do
+            Config.ProtectedName = Config.ProtectedName .. Config.FilterPad
+        end
+    end
+end
+
+local function FilterString(S)
+    local RS = S
+    if Config.OtherPlayers then
+        for I, V in pairs(ProtectedNames) do
+            RS = string.gsub(RS, I, V)
+        end
+    end
+    RS = string.gsub(RS, LPName, Config.ProtectedName)
+    return RS
+end
+
+for I, V in pairs(game:GetDescendants()) do
+    if Config.RenameTextBoxes then
+        if IsA(V, "TextLabel") or IsA(V, "TextButton") or IsA(V, "TextBox") then
+            V.Text = FilterString(V.Text)
+
+            if Config.UseAggressiveFiltering then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    else
+        if IsA(V, "TextLabel") or IsA(V, "TextButton") then
+            V.Text = FilterString(V.Text)
+
+            if Config.UseAggressiveFiltering then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    end
+end
+
+if Config.UseAggressiveFiltering then
+    game.DescendantAdded:connect(function(V)
+        if Config.RenameTextBoxes then
+            if IsA(V, "TextLabel") or IsA(V, "TextButton") or IsA(V, "TextBox") then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        else
+            if IsA(V, "TextLabel") or IsA(V, "TextButton") then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    end)
+end
+
+if Config.UseMetatableHook then
+    if not getrawmetatable then
+        error("GetRawMetaTable not found")
+    end
+
+    local NewCC = function(F)
+        if newcclosure then return newcclosure(F) end
+        return F
+    end
+
+    local SetRO = function(MT, V)
+        if setreadonly then return setreadonly(MT, V) end
+        if not V and make_writeable then return make_writeable(MT) end
+        if V and make_readonly then return make_readonly(MT) end
+        error("No setreadonly found")
+    end
+
+    local MT = getrawmetatable(game)
+    local OldNewIndex = MT.__newindex
+    SetRO(MT, false)
+
+    MT.__newindex = NewCC(function(T, K, V)
+        if Config.RenameTextBoxes then
+            if (IsA(T, "TextLabel") or IsA(T, "TextButton") or IsA(T, "TextBox")) and K == "Text" and type(V) == "string" then
+                return OldNewIndex(T, K, FilterString(V))
+            end
+        else
+            if (IsA(T, "TextLabel") or IsA(T, "TextButton")) and K == "Text" and type(V) == "string" then
+                return OldNewIndex(T, K, FilterString(V))
+            end
+        end
+
+        return OldNewIndex(T, K, V)
+    end)
+
+    SetRO(MT, true)
+end
+
+
+    elseif arg == "Shooker Man" then
+game.Players.LocalPlayer.Character.Shirt.ShirtTemplate = "http://www.roblox.com/asset/?id=6252578238"
+game.Players.LocalPlayer.Character.Pants.PantsTemplate = "rbxassetid://6252577756"
+game.Players.LocalPlayer.Character.FakeHead.face.Texture = "http://www.roblox.com/asset/?id=4272895036"
+game.Players.LocalPlayer.Character.NerdHair.Handle.Mesh.TextureId = "http://www.roblox.com/asset/?id=15730704"
+game.Players.LocalPlayer.Character.Cap:Destroy()
+
+
+game.Players.LocalPlayer.Ragdoll.Shirt.ShirtTemplate = "http://www.roblox.com/asset/?id=6252578238"
+game.Players.LocalPlayer.Ragdoll.Pants.PantsTemplate = "rbxassetid://6252577756"
+game.Players.LocalPlayer.Ragdoll.Head.face.Texture = "http://www.roblox.com/asset/?id=4272895036"
+game.Players.LocalPlayer.Ragdoll.Cap:Destroy()
+
+
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Shirt.ShirtTemplate = "http://www.roblox.com/asset/?id=6252578238"
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Pants.PantsTemplate = "rbxassetid://6252577756"
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Head.face.Texture = "http://www.roblox.com/asset/?id=4272895036"
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Cap:Destroy()
+
+
+game:GetService("ReplicatedStorage").FavoriteWeapons.Delinquent.Value = "Fisticuffs"
+game:GetService("ReplicatedStorage").ItemData.Images.Skins.Delinquent.Quality.Value = "Promo"
+
+local Config =
+{
+    ProtectedName = "Shooker Man", --What the protected name should be called. (Go to line 51)
+    OtherPlayers = false, --If other players should also have protected names.
+    OtherPlayersTemplate = "NameProtect", --Template for other players protected name (ex: "NamedProtect" will turn into "NameProtect1" for first player and so on)
+    RenameTextBoxes = false, --If TextBoxes should be renamed. (could cause issues with admin guis/etc)
+    UseFilterPadding = false, --If filtePeach name should be the same size as a regular name.
+    FilterPad = " ", --Character used to filter pad.
+    UseMetatableHook = true, --Use metatable hook to increase chance of filtering. (is not supported on wrappers like bleu)
+    UseAggressiveFiltering = false --Use aggressive property renaming filter. (renames a lot more but at the cost of lag)
+}
+
+local ProtectedNames = {}
+local Counter = 1
+if Config.OtherPlayers then
+    for I, V in pairs(game.Players:GetPlayers()) do
+        local Filter = Config.OtherPlayersTemplate .. tostring(Counter)
+        if Config.UseFilterPadding then
+            if string.len(Filter) > string.len(V.Name) then
+                Filter = string.sub(Filter, 1, string.len(V.Name))
+            elseif string.len(Filter) < string.len(V.Name) then
+                local Add = string.len(V.Name) - string.len(Filter)
+                for I=1,Add do
+                    Filter = Filter .. Config.FilterPad
+                end
+            end
+        end
+        ProtectedNames[V.Name] = Filter
+        Counter = Counter + 1
+    end
+
+    game.Players.PlayerAdded:connect(function(Player)
+        local Filter = Config.OtherPlayersTemplate .. tostring(Counter)
+        if Config.UseFilterPadding then
+            if string.len(Filter) > string.len(V.Name) then
+                Filter = string.sub(Filter, 1, string.len(V.Name))
+            elseif string.len(Filter) < string.len(V.Name) then
+                local Add = string.len(V.Name) - string.len(Filter)
+                for I=1,Add do
+                    Filter = Filter .. Config.FilterPad
+                end
+            end
+        end
+        ProtectedNames[Player.Name] = Filter
+        Counter = Counter + 1
+    end)
+end
+
+local LPName = "Delinquent" -- hi, hi :D
+local IsA = game.IsA
+
+if Config.UseFilterPadding then
+    if string.len(Config.ProtectedName) > string.len(LPName) then
+        Config.ProtectedName = string.sub(Config.ProtectedName, 1, string.len(LPName))
+    elseif string.len(Config.ProtectedName) < string.len(LPName) then
+        local Add = string.len(LPName) - string.len(Config.ProtectedName)
+        for I=1,Add do
+            Config.ProtectedName = Config.ProtectedName .. Config.FilterPad
+        end
+    end
+end
+
+local function FilterString(S)
+    local RS = S
+    if Config.OtherPlayers then
+        for I, V in pairs(ProtectedNames) do
+            RS = string.gsub(RS, I, V)
+        end
+    end
+    RS = string.gsub(RS, LPName, Config.ProtectedName)
+    return RS
+end
+
+for I, V in pairs(game:GetDescendants()) do
+    if Config.RenameTextBoxes then
+        if IsA(V, "TextLabel") or IsA(V, "TextButton") or IsA(V, "TextBox") then
+            V.Text = FilterString(V.Text)
+
+            if Config.UseAggressiveFiltering then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    else
+        if IsA(V, "TextLabel") or IsA(V, "TextButton") then
+            V.Text = FilterString(V.Text)
+
+            if Config.UseAggressiveFiltering then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    end
+end
+
+if Config.UseAggressiveFiltering then
+    game.DescendantAdded:connect(function(V)
+        if Config.RenameTextBoxes then
+            if IsA(V, "TextLabel") or IsA(V, "TextButton") or IsA(V, "TextBox") then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        else
+            if IsA(V, "TextLabel") or IsA(V, "TextButton") then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    end)
+end
+
+if Config.UseMetatableHook then
+    if not getrawmetatable then
+        error("GetRawMetaTable not found")
+    end
+
+    local NewCC = function(F)
+        if newcclosure then return newcclosure(F) end
+        return F
+    end
+
+    local SetRO = function(MT, V)
+        if setreadonly then return setreadonly(MT, V) end
+        if not V and make_writeable then return make_writeable(MT) end
+        if V and make_readonly then return make_readonly(MT) end
+        error("No setreadonly found")
+    end
+
+    local MT = getrawmetatable(game)
+    local OldNewIndex = MT.__newindex
+    SetRO(MT, false)
+
+    MT.__newindex = NewCC(function(T, K, V)
+        if Config.RenameTextBoxes then
+            if (IsA(T, "TextLabel") or IsA(T, "TextButton") or IsA(T, "TextBox")) and K == "Text" and type(V) == "string" then
+                return OldNewIndex(T, K, FilterString(V))
+            end
+        else
+            if (IsA(T, "TextLabel") or IsA(T, "TextButton")) and K == "Text" and type(V) == "string" then
+                return OldNewIndex(T, K, FilterString(V))
+            end
+        end
+
+        return OldNewIndex(T, K, V)
+    end)
+
+    SetRO(MT, true)
+end
+
+    elseif arg == "Myboe" then
+game.Players.LocalPlayer.Character.FakeHead.Mesh.MeshId = "http://www.roblox.com/asset/?id=3805332618"
+game.Players.LocalPlayer.Character.FakeHead.Mesh.TextureId = "http://www.roblox.com/asset/?id=3805332715"
+game.Players.LocalPlayer.Character.FakeHead.Mesh.Scale=Vector3.new(0.130, 0.130, 0.130)
+game.Players.LocalPlayer.Character.Pants.PantsTemplate = "rbxassetid://4587933643"
+game.Players.LocalPlayer.Character.Shirt.ShirtTemplate = "http://www.roblox.com/asset/?id=4584010127"
+game.Players.LocalPlayer.Character.Cap.Handle.Mesh.MeshId = "http://www.roblox.com/asset/?id=163516871"
+game.Players.LocalPlayer.Character.Cap.Handle.Mesh.Scale=Vector3.new(5.3, 5.3, 5.3)
+game.Players.LocalPlayer.Ragdoll.Head.Mesh.MeshId = "http://www.roblox.com/asset/?id=13636429"
+game.Players.LocalPlayer.Ragdoll.Head.Mesh.TextureId = "http://www.roblox.com/asset/?id=13636445"
+game.Players.LocalPlayer.Ragdoll.Cap.Handle.Mesh.MeshId = "http://www.roblox.com/asset/?id=163516871"
+game.Players.LocalPlayer.Ragdoll.Cap.Handle.Mesh.Scale=Vector3.new(5.3, 5.3, 5.3)
+game.Players.LocalPlayer.Ragdoll.Head.Mesh.Scale=Vector3.new(0.130, 0.130, 0.130)
+game.Players.LocalPlayer.Ragdoll.Head.face:Destroy()
+game.Players.LocalPlayer.Ragdoll.Pants.PantsTemplate = "rbxassetid://4587933643"
+game.Players.LocalPlayer.Ragdoll.Shirt.ShirtTemplate = "http://www.roblox.com/asset/?id=4584010127"
+game.Players.LocalPlayer.Data.Skin.Value = "Myboe"
+game:GetService("ReplicatedStorage").FavoriteWeapons.Delinquent.Value = "Equip"
+game:GetService("ReplicatedStorage").ItemData.Images.Skins.Delinquent.Quality.Value = "Admin"
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Head.Mesh.MeshId = "http://www.roblox.com/asset/?id=3805332618"
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Head.Mesh.TextureId = "http://www.roblox.com/asset/?id=3805332715"
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Cap.Handle.Mesh.MeshId = "http://www.roblox.com/asset/?id=163516871"
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Cap.Handle.Mesh.Scale=Vector3.new(5.3, 5.3, 5.3)
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Head.Mesh.Scale=Vector3.new(0.130, 0.130, 0.130)
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Head.Mesh.OriginalSize:Destroy()
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Cap.Handle.OriginalSize:Destroy()
+game.Players.LocalPlayer.Ragdoll.Head.Mesh.OriginalSize:Destroy()
+game.Players.LocalPlayer.Ragdoll.Cap.Handle.OriginalSize:Destroy()
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Pants.PantsTemplate = "rbxassetid://4587933643"
+game.ReplicatedStorage.StreamedAssets.ChrModels.Delinquent.Shirt.ShirtTemplate = "http://www.roblox.com/asset/?id=4584010127"
+local Config =
+{
+    ProtectedName = "Myboe", --What the protected name should be called. (Go to line 51)
+    OtherPlayers = false, --If other players should also have protected names.
+    OtherPlayersTemplate = "NameProtect", --Template for other players protected name (ex: "NamedProtect" will turn into "NameProtect1" for first player and so on)
+    RenameTextBoxes = false, --If TextBoxes should be renamed. (could cause issues with admin guis/etc)
+    UseFilterPadding = false, --If filtered name should be the same size as a regular name.
+    FilterPad = " ", --Character used to filter pad.
+    UseMetatableHook = true, --Use metatable hook to increase chance of filtering. (is not supported on wrappers like bleu)
+    UseAggressiveFiltering = false --Use aggressive property renaming filter. (renames a lot more but at the cost of lag)
+}
+
+local ProtectedNames = {}
+local Counter = 1
+if Config.OtherPlayers then
+    for I, V in pairs(game:GetService("Players"):GetPlayers()) do
+        local Filter = Config.OtherPlayersTemplate .. tostring(Counter)
+        if Config.UseFilterPadding then
+            if string.len(Filter) > string.len(V.Name) then
+                Filter = string.sub(Filter, 1, string.len(V.Name))
+            elseif string.len(Filter) < string.len(V.Name) then
+                local Add = string.len(V.Name) - string.len(Filter)
+                for I=1,Add do
+                    Filter = Filter .. Config.FilterPad
+                end
+            end
+        end
+        ProtectedNames[V.Name] = Filter
+        Counter = Counter + 1
+    end
+
+    game:GetService("Players").PlayerAdded:connect(function(Player)
+        local Filter = Config.OtherPlayersTemplate .. tostring(Counter)
+        if Config.UseFilterPadding then
+            if string.len(Filter) > string.len(V.Name) then
+                Filter = string.sub(Filter, 1, string.len(V.Name))
+            elseif string.len(Filter) < string.len(V.Name) then
+                local Add = string.len(V.Name) - string.len(Filter)
+                for I=1,Add do
+                    Filter = Filter .. Config.FilterPad
+                end
+            end
+        end
+        ProtectedNames[Player.Name] = Filter
+        Counter = Counter + 1
+    end)
+end
+
+local LPName = "Delinquent" -- hi, hi :D
+local IsA = game.IsA
+
+if Config.UseFilterPadding then
+    if string.len(Config.ProtectedName) > string.len(LPName) then
+        Config.ProtectedName = string.sub(Config.ProtectedName, 1, string.len(LPName))
+    elseif string.len(Config.ProtectedName) < string.len(LPName) then
+        local Add = string.len(LPName) - string.len(Config.ProtectedName)
+        for I=1,Add do
+            Config.ProtectedName = Config.ProtectedName .. Config.FilterPad
+        end
+    end
+end
+
+local function FilterString(S)
+    local RS = S
+    if Config.OtherPlayers then
+        for I, V in pairs(ProtectedNames) do
+            RS = string.gsub(RS, I, V)
+        end
+    end
+    RS = string.gsub(RS, LPName, Config.ProtectedName)
+    return RS
+end
+
+for I, V in pairs(game:GetDescendants()) do
+    if Config.RenameTextBoxes then
+        if IsA(V, "TextLabel") or IsA(V, "TextButton") or IsA(V, "TextBox") then
+            V.Text = FilterString(V.Text)
+
+            if Config.UseAggressiveFiltering then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    else
+        if IsA(V, "TextLabel") or IsA(V, "TextButton") then
+            V.Text = FilterString(V.Text)
+
+            if Config.UseAggressiveFiltering then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    end
+end
+
+if Config.UseAggressiveFiltering then
+    game.DescendantAdded:connect(function(V)
+        if Config.RenameTextBoxes then
+            if IsA(V, "TextLabel") or IsA(V, "TextButton") or IsA(V, "TextBox") then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        else
+            if IsA(V, "TextLabel") or IsA(V, "TextButton") then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    end)
+end
+
+if Config.UseMetatableHook then
+    if not getrawmetatable then
+        error("GetRawMetaTable not found")
+    end
+
+    local NewCC = function(F)
+        if newcclosure then return newcclosure(F) end
+        return F
+    end
+
+    local SetRO = function(MT, V)
+        if setreadonly then return setreadonly(MT, V) end
+        if not V and make_writeable then return make_writeable(MT) end
+        if V and make_readonly then return make_readonly(MT) end
+        error("No setreadonly found")
+    end
+
+    local MT = getrawmetatable(game)
+    local OldNewIndex = MT.__newindex
+    SetRO(MT, false)
+
+    MT.__newindex = NewCC(function(T, K, V)
+        if Config.RenameTextBoxes then
+            if (IsA(T, "TextLabel") or IsA(T, "TextButton") or IsA(T, "TextBox")) and K == "Text" and type(V) == "string" then
+                return OldNewIndex(T, K, FilterString(V))
+            end
+        else
+            if (IsA(T, "TextLabel") or IsA(T, "TextButton")) and K == "Text" and type(V) == "string" then
+                return OldNewIndex(T, K, FilterString(V))
+            end
+        end
+
+        return OldNewIndex(T, K, V)
+    end)
+
+    SetRO(MT, true)
+end
+end
+end)
+
+SkinSS:Button("Weeb Delinquent in Game(Click in Game)",function()
+game:GetService("Players").LocalPlayer.Character.NerdHair.Handle.Mesh.MeshId = "http://www.roblox.com/asset/?id=13652771"
+game:GetService("Players").LocalPlayer.Character.NerdHair.Handle.Mesh.TextureId = "http://www.roblox.com/asset/?id=13652772"
+game:GetService("Players").LocalPlayer.Character.Cap.Handle.Mesh.MeshId = "http://www.roblox.com/asset/?id=560180459"
+game:GetService("Players").LocalPlayer.Character.Cap.Handle.Mesh.TextureId = "http://www.roblox.com/asset/?id=15364375"
+game:GetService("Players").LocalPlayer.Character.FakeHead.face.Texture = "http://www.roblox.com/asset/?id=125042132"
+game:GetService("Players").LocalPlayer.Character.Cap.Handle.Mesh.Scale=Vector3.new(6, 6, 5)
+
+
+game:GetService("Players").LocalPlayer.Character.Shirt.ShirtTemplate = "http://www.roblox.com/asset/?id=2629596598"
+game:GetService("Players").LocalPlayer.Character.Pants.PantsTemplate = "http://www.roblox.com/asset/?id=2136335756"
+
+
+game:GetService("Players").LocalPlayer.Ragdoll.NerdHair.Handle.Mesh.MeshId = "http://www.roblox.com/asset/?id=13652771"
+game:GetService("Players").LocalPlayer.Ragdoll.NerdHair.Handle.Mesh.TextureId = "http://www.roblox.com/asset/?id=13652772"
+game:GetService("Players").LocalPlayer.Ragdoll.Cap.Handle.Mesh.MeshId = "http://www.roblox.com/asset/?id=560180459"
+game:GetService("Players").LocalPlayer.Ragdoll.Cap.Handle.Mesh.TextureId = "http://www.roblox.com/asset/?id=15364375"
+game:GetService("Players").LocalPlayer.Ragdoll.FakeHead.face.Texture = "http://www.roblox.com/asset/?id=125042132"
+game:GetService("Players").LocalPlayer.Ragdoll.Cap.Handle.Mesh.Scale=Vector3.new(6, 6, 5)
+
+
+game:GetService("ReplicatedStorage").ItemData.Images.Skins.Delinquent.Quality.Value = "Admin"
+game:GetService("ReplicatedStorage").FavoriteWeapons.Delinquent.Value = "Ban Hammer"
+end)
+
+
+MeleeSS:Textbox("Enter Any Melee in Locker", true,function(Text)
+local Core = getsenv(game.Players.LocalPlayer.PlayerGui.Menew.LocalScript);
+
+local Loadout;
+for i,v in pairs(getupvalues(Core.ViewItems)) do
+    if typeof(v) == "table" then
+        if v.Melees then
+            Loadout = v;
+        end
+    end
+end
+
+table.insert(Loadout.Melees, Text);
+end)
+
+
+
+EmoteSS:Button("Unlock All Emotes in Locker")
+local Hooks = loadstring(game:HttpGet("https://pastebin.com/raw/ByQs3S0R"))();
+local Core = getsenv(game.Players.LocalPlayer.PlayerGui.Menew.LocalScript);
+local hkGame = Hooks:new(getrawmetatable(game));
+
+local Loadout;
+for i,v in pairs(getupvalues(Core.ViewItems)) do
+    if typeof(v) == "table" then
+        if v.Skins then
+            Loadout = v;
+        end
+    end
+end
+
+for i,v in pairs(game:GetService("ReplicatedStorage").ItemData.Images:GetChildren()) do
+    if v.Name == "Emotes" then
+        for _, item in pairs(v:GetChildren()) do
+            table.insert(Loadout[v.Name], item.Name);
+        end
+    end
+end
+
+hkGame:Hook("__namecall", function(self, ...) 
+	local args = {...};
+    if self.Name == "UpdateLoadout" then
+        if args[1][1] == "UpdateLoadout" then
+            local Loadout = args[1][2]
+            game.Players.LocalPlayer.Data.Melee.Value = Loadout.Melee;
+        end
+    end
+
+    if self.Name == "GetInventory" then
+        setupvalue(Core.ViewItems, 1, Loadout);
+    end	
+	return hkGame:getOriginal("__namecall")(self, unpack(args));
+end)
+setupvalue(Core.ViewItems, 1, Loadout);
+
+
+EmoteSS:Dropdown("FE Replace Bellringer With", {"Thriller","Headtrick","Man Standing","Brisk Walk"}, function(arg)
+	if arg == "Thriller" then
+			game.ReplicatedStorage.Taunts.Bellringer:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Thriller"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Bellringer
+end
+
+	elseif arg == "Headtrick" then
+		  game.ReplicatedStorage.Taunts.Bellringer:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Headtrick"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Bellringer
+end
+    elseif arg == "Man Standing" then
+        game.ReplicatedStorage.Taunts.Bellringer:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Man Standing"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Bellringer
+end
+
+    elseif arg == "Brisk Walk" then
+game.ReplicatedStorage.Taunts.Bellringer:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Brisk Walk"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Bellringer
+end
+end
+end)
+
+EmoteSS:Dropdown("FE Replace Megaphone With", {"Movin' Megaphone","Thriller","Headtrick","Man Standing","Brisk Walk"}, function(arg)
+		if arg == "Movin' Megaphone" then
+			game.ReplicatedStorage.Taunts.Megaphone:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Movin' Megaphone"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Megaphone
+end
+
+	elseif arg == "Thriller" then
+			game.ReplicatedStorage.Taunts.Megaphone:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Thriller"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Megaphone
+end
+
+	elseif arg == "Headtrick" then
+		  game.ReplicatedStorage.Taunts.Megaphone:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Headtrick"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Megaphone
+end
+    elseif arg == "Man Standing" then
+        game.ReplicatedStorage.Taunts.Megaphone:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Man Standing"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Megaphone
+end
+
+    elseif arg == "Brisk Walk" then
+game.ReplicatedStorage.Taunts.Megaphone:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Brisk Walk"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Megaphone
+end
+end
+end)
+
+EmoteSS:Dropdown("FE Replace Skateboard With", {"Thriller","Headtrick","Man Standing","Brisk Walk"}, function(arg)
+	if arg == "Thriller" then
+			game.ReplicatedStorage.Taunts.Skateboard:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Thriller"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Skateboard
+end
+
+	elseif arg == "Headtrick" then
+		  game.ReplicatedStorage.Taunts.Skateboard:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Headtrick"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Skateboard
+end
+    elseif arg == "Man Standing" then
+        game.ReplicatedStorage.Taunts.Skateboard:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Man Standing"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Skateboard
+end
+
+    elseif arg == "Brisk Walk" then
+game.ReplicatedStorage.Taunts.Skateboard:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Brisk Walk"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Skateboard
+end
+end
+end)
+
+EmoteSS:Dropdown("FE Replace Cawfee With", {"Thriller","Headtrick","Man Standing","Brisk Walk"}, function(arg)
+	if arg == "Thriller" then
+			game.ReplicatedStorage.Taunts.Cawfee:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Thriller"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Cawfee
+end
+
+	elseif arg == "Headtrick" then
+		  game.ReplicatedStorage.Taunts.Cawfee:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Headtrick"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Cawfee
+end
+    elseif arg == "Man Standing" then
+        game.ReplicatedStorage.Taunts.Cawfee:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Man Standing"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Cawfee
+end
+
+    elseif arg == "Brisk Walk" then
+game.ReplicatedStorage.Taunts.Cawfee:ClearAllChildren()
+for i,v in pairs(game.ReplicatedStorage.Taunts["Brisk Walk"]:children()) do
+    v:clone().Parent=game.ReplicatedStorage.Taunts.Cawfee
+end
+end
+end)
+
+FeSS:Textbox("FE Dev Melees(Click On Menu)", true,function(Text)
+debug.setconstant(getsenv(game.Players.LocalPlayer.PlayerGui.GUI.Client).givetools,30,Text)
+
+table.insert(Loadout.Melees, Text);
+end)
+
+FeSS:Dropdown("FE Dev Swords in Locker", {"Darkheart","Firebrand","Illumina","Venomshank","Windforce","Ghostwalker","Ice Dagger"}, function(arg)
+
+    if arg == "Darkheart" then
+local Core = getsenv(game.Players.LocalPlayer.PlayerGui.Menew.LocalScript);
+
+local Loadout;
+for i,v in pairs(getupvalues(Core.ViewItems)) do
+    if typeof(v) == "table" then
+        if v.Melees then
+            Loadout = v;
+        end
+    end
+end
+
+table.insert(Loadout.Melees, "The Darkheart");
+debug.setconstant(getsenv(game.Players.LocalPlayer.PlayerGui.GUI.Client).givetools,30,"Darkheart")
+
+    elseif arg == "Firebrand" then
+local Core = getsenv(game.Players.LocalPlayer.PlayerGui.Menew.LocalScript);
+
+local Loadout;
+for i,v in pairs(getupvalues(Core.ViewItems)) do
+    if typeof(v) == "table" then
+        if v.Melees then
+            Loadout = v;
+        end
+    end
+end
+
+table.insert(Loadout.Melees, "The Firebrand");
+debug.setconstant(getsenv(game.Players.LocalPlayer.PlayerGui.GUI.Client).givetools,30,"Firebrand")
+
+
+    elseif arg == "Illumina" then
+local Core = getsenv(game.Players.LocalPlayer.PlayerGui.Menew.LocalScript);
+
+local Loadout;
+for i,v in pairs(getupvalues(Core.ViewItems)) do
+    if typeof(v) == "table" then
+        if v.Melees then
+            Loadout = v;
+        end
+    end
+end
+
+table.insert(Loadout.Melees, "The Illumina");
+debug.setconstant(getsenv(game.Players.LocalPlayer.PlayerGui.GUI.Client).givetools,30,"Illumina")
+
+    elseif arg == "Venomshank" then
+local Core = getsenv(game.Players.LocalPlayer.PlayerGui.Menew.LocalScript);
+
+local Loadout;
+for i,v in pairs(getupvalues(Core.ViewItems)) do
+    if typeof(v) == "table" then
+        if v.Melees then
+            Loadout = v;
+        end
+    end
+end
+
+table.insert(Loadout.Melees, "The Venomshank");
+debug.setconstant(getsenv(game.Players.LocalPlayer.PlayerGui.GUI.Client).givetools,30,"Venomshank")
+
+    elseif arg == "Windforce" then
+local Core = getsenv(game.Players.LocalPlayer.PlayerGui.Menew.LocalScript);
+
+local Loadout;
+for i,v in pairs(getupvalues(Core.ViewItems)) do
+    if typeof(v) == "table" then
+        if v.Melees then
+            Loadout = v;
+        end
+    end
+end
+
+table.insert(Loadout.Melees, "The Windforce");
+debug.setconstant(getsenv(game.Players.LocalPlayer.PlayerGui.GUI.Client).givetools,30,"Windforce")
+
+    elseif arg == "Ghostwalker" then
+local Core = getsenv(game.Players.LocalPlayer.PlayerGui.Menew.LocalScript);
+
+local Loadout;
+for i,v in pairs(getupvalues(Core.ViewItems)) do
+    if typeof(v) == "table" then
+        if v.Melees then
+            Loadout = v;
+        end
+    end
+end
+
+table.insert(Loadout.Melees, "The Ghostwalker");
+debug.setconstant(getsenv(game.Players.LocalPlayer.PlayerGui.GUI.Client).givetools,30,"Ghostwalker")
+
+    elseif arg == "Ice Dagger" then
+local Core = getsenv(game.Players.LocalPlayer.PlayerGui.Menew.LocalScript);
+
+local Loadout;
+for i,v in pairs(getupvalues(Core.ViewItems)) do
+    if typeof(v) == "table" then
+        if v.Melees then
+            Loadout = v;
+        end
+    end
+end
+
+table.insert(Loadout.Melees, "The Ice Dagger");
+debug.setconstant(getsenv(game.Players.LocalPlayer.PlayerGui.GUI.Client).givetools,30,"Ice Dagger")
+end
+end)
+
+
+FeSS:Button("FE Headless Delinquent",function()
+if game.Players.LocalPlayer.Character:FindFirstChild("HeadHB")then
+            game.Players.LocalPlayer.Character:FindFirstChild("HeadHB"):Destroy()
+        end
+        if game.Players.LocalPlayer.Character:FindFirstChild("FakeHead")then
+            game.Players.LocalPlayer.Character:FindFirstChild("FakeHead"):Destroy()
+        end
+end)
+FeSS:Button("FE Gold Knife",function()
+    debug.setconstant(getsenv(game.Players.LocalPlayer.PlayerGui.GUI.Client).givetools,30,"Golden Knife")
+    getsenv(game.Players.LocalPlayer.PlayerGui.GUI.Client).givetools()
+        require(game.Players.LocalPlayer.PlayerGui.GUI.Client.Functions.Weapons).usethatgun()
+end)
+
+MiscS:Button("Become Rainster",function()
+    --Name Protect Script by sus
+ 
+local Config =
+{
+    ProtectedName = "RainsterYT", --What the protected name should be called.
+    OtherPlayers = false, --If other players should also have protected names.
+    OtherPlayersTemplate = "NameProtect", --Template for other players protected name (ex: "NamedProtect" will turn into "NameProtect1" for first player and so on)
+    RenameTextBoxes = false, --If TextBoxes should be renamed. (could cause issues with admin guis/etc)
+    UseFilterPadding = false, --If filtered name should be the same size as a regular name.
+    FilterPad = " ", --Character used to filter pad.
+    UseMetatableHook = true, --Use metatable hook to increase chance of filtering. (is not supported on wrappers like bleu)
+    UseAggressiveFiltering = true --Use aggressive property renaming filter. (renames a lot more but at the cost of lag)
+}
+ 
+local ProtectedNames = {}
+local Counter = 1
+if Config.OtherPlayers then
+    for I, V in pairs(game:GetService("Players"):GetPlayers()) do
+        local Filter = Config.OtherPlayersTemplate .. tostring(Counter)
+        if Config.UseFilterPadding then
+            if string.len(Filter) > string.len(V.Name) then
+                Filter = string.sub(Filter, 1, string.len(V.Name))
+            elseif string.len(Filter) < string.len(V.Name) then
+                local Add = string.len(V.Name) - string.len(Filter)
+                for I=1,Add do
+                    Filter = Filter .. Config.FilterPad
+                end
+            end
+        end
+        ProtectedNames[V.Name] = Filter
+        Counter = Counter + 1
+    end
+ 
+    game:GetService("Players").PlayerAdded:connect(function(Player)
+        local Filter = Config.OtherPlayersTemplate .. tostring(Counter)
+        if Config.UseFilterPadding then
+            if string.len(Filter) > string.len(V.Name) then
+                Filter = string.sub(Filter, 1, string.len(V.Name))
+            elseif string.len(Filter) < string.len(V.Name) then
+                local Add = string.len(V.Name) - string.len(Filter)
+                for I=1,Add do
+                    Filter = Filter .. Config.FilterPad
+                end
+            end
+        end
+        ProtectedNames[Player.Name] = Filter
+        Counter = Counter + 1
+    end)
+end
+ 
+local LPName = game:GetService("Players").LocalPlayer.Name
+local IsA = game.IsA
+ 
+if Config.UseFilterPadding then
+    if string.len(Config.ProtectedName) > string.len(LPName) then
+        Config.ProtectedName = string.sub(Config.ProtectedName, 1, string.len(LPName))
+    elseif string.len(Config.ProtectedName) < string.len(LPName) then
+        local Add = string.len(LPName) - string.len(Config.ProtectedName)
+        for I=1,Add do
+            Config.ProtectedName = Config.ProtectedName .. Config.FilterPad
+        end
+    end
+end
+ 
+local function FilterString(S)
+    local RS = S
+    if Config.OtherPlayers then
+        for I, V in pairs(ProtectedNames) do
+            RS = string.gsub(RS, I, V)
+        end
+    end
+    RS = string.gsub(RS, LPName, Config.ProtectedName)
+    return RS
+end
+ 
+for I, V in pairs(game:GetDescendants()) do
+    if Config.RenameTextBoxes then
+        if IsA(V, "TextLabel") or IsA(V, "TextButton") or IsA(V, "TextBox") then
+            V.Text = FilterString(V.Text)
+ 
+            if Config.UseAggressiveFiltering then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    else
+        if IsA(V, "TextLabel") or IsA(V, "TextButton") then
+            V.Text = FilterString(V.Text)
+ 
+            if Config.UseAggressiveFiltering then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    end
+end
+ 
+if Config.UseAggressiveFiltering then
+    game.DescendantAdded:connect(function(V)
+        if Config.RenameTextBoxes then
+            if IsA(V, "TextLabel") or IsA(V, "TextButton") or IsA(V, "TextBox") then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        else
+            if IsA(V, "TextLabel") or IsA(V, "TextButton") then
+                V:GetPropertyChangedSignal("Text"):connect(function()
+                    V.Text = FilterString(V.Text)
+                end)
+            end
+        end
+    end)
+end
+ 
+if Config.UseMetatableHook then
+    if not getrawmetatable then
+        error("GetRawMetaTable not found")
+    end
+ 
+    local NewCC = function(F)
+        if newcclosure then return newcclosure(F) end
+        return F
+    end
+ 
+    local SetRO = function(MT, V)
+        if setreadonly then return setreadonly(MT, V) end
+        if not V and make_writeable then return make_writeable(MT) end
+        if V and make_readonly then return make_readonly(MT) end
+        error("No setreadonly found")
+    end
+ 
+    local MT = getrawmetatable(game)
+    local OldNewIndex = MT.__newindex
+    SetRO(MT, false)
+ 
+    MT.__newindex = NewCC(function(T, K, V)
+        if Config.RenameTextBoxes then
+            if (IsA(T, "TextLabel") or IsA(T, "TextButton") or IsA(T, "TextBox")) and K == "Text" and type(V) == "string" then
+                return OldNewIndex(T, K, FilterString(V))
+            end
+        else
+            if (IsA(T, "TextLabel") or IsA(T, "TextButton")) and K == "Text" and type(V) == "string" then
+                return OldNewIndex(T, K, FilterString(V))
+            end
+        end
+ 
+        return OldNewIndex(T, K, V)
+    end)
+ 
+    SetRO(MT, true)
+end
+game.Players.LocalPlayer.QueuePoints.Name = "IsAdmin"
+game.Players.LocalPlayer.UserId = "1711686684"
+local level = "RainsterYT - Level: 576"
+local startxp = "153664 xp"
+local endxp = "1537677 xp"
+local text = "A R S E N A L"
+ 
+game:GetService("Players").LocalPlayer.PlayerGui.Menew.Main.PlrName.Text = tostring(level)
+game:GetService("Players").LocalPlayer.PlayerGui.Menew.Main.Title.Text = tostring(text)
+game:GetService("Players").LocalPlayer.PlayerGui.Menew.Main.Title.DropShadow.Text = tostring(text)
+game:GetService("Players").LocalPlayer.PlayerGui.Menew.Main.LevelMeter.StartXP.Text = tostring(startxp)
+game:GetService("Players").LocalPlayer.PlayerGui.Menew.Main.LevelMeter.EndXP.Text = tostring(endxp)
+local Plr = game.Players.LocalPlayer
+ 
+Plr:GetMouse().KeyDown:Connect(function(K)
+    if K == "e" then
+        game.Players.LocalPlayer.PlayerGui.BanBoi.Ban.Visible = true
+    end
+end)
+ 
+local Plr = game.Players.LocalPlayer
+ 
+Plr:GetMouse().KeyDown:Connect(function(K)
+    if K == "r" then
+        game.Players.LocalPlayer.PlayerGui.BanBoi.Ban.Visible = false
+    end
+end)
+end)
+
+
+MiscS:Button("Unlock All Teams",function()
+local player = game.Players.LocalPlayer
+print(player.Name)
+local but = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons["Grn"]:Clone()
+but.Visible  = true
+local red = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons.Rd.lock
+local blu = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons.Blu.lock
+--but.ImageColor3 = Color3.new(100, 0.7, 0)--Red, Green, Blue.
+--but.Position = UDim2.new(0, -155, 1, -320)
+but.Parent = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons
+but.MouseButton1Click:connect(function()
+    if blu.Visible == true then
+       game.ReplicatedStorage.Events.JoinTeam:FireServer("TRC") 
+    end
+   if red.Visible == true then
+        game.ReplicatedStorage.Events.JoinTeam:FireServer("TBC") 
+   end
+    
+    game.Players.LocalPlayer.Status.Team.Value = "TPC"
+    
+    game.ReplicatedStorage.Events.JoinTeam:FireServer("TRC")
+    game.ReplicatedStorage.Events.KillMe:FireServer()
+    wait(0.2)
+    game.Players.LocalPlayer.Status.Team.Value = "TGC"
+    game.Players.LocalPlayer.Status.Team.Value = "TGC"
+    
+    wait(0.3)
+    
+    
+    game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Visible = false
+    game.Players.LocalPlayer.PlayerGui.GUI.BottomFrame.Visible = false
+    
+    
+     
+    
+
+
+
+end)
+
+local player = game.Players.LocalPlayer
+print(player.Name)
+local but = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons["Pur"]:Clone()
+but.Visible  = true
+local red = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons.Rd.lock
+local blu = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons.Blu.lock
+--but.ImageColor3 = Color3.new(100, 0.7, 0)--Red, Green, Blue.
+--but.Position = UDim2.new(0, -155, 1, -320)
+but.Parent = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons
+but.MouseButton1Click:connect(function()
+    if blu.Visible == true then
+       game.ReplicatedStorage.Events.JoinTeam:FireServer("TRC") 
+    end
+   if red.Visible == true then
+        game.ReplicatedStorage.Events.JoinTeam:FireServer("TBC") 
+   end
+    
+    game.Players.LocalPlayer.Status.Team.Value = "TPC"
+    
+    game.ReplicatedStorage.Events.JoinTeam:FireServer("TRC")
+    game.ReplicatedStorage.Events.KillMe:FireServer()
+    wait(0.2)
+    game.Players.LocalPlayer.Status.Team.Value = "TPC"
+    game.Players.LocalPlayer.Status.Team.Value = "TPC"
+    
+    wait(0.3)
+    
+    
+    game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Visible = false
+    game.Players.LocalPlayer.PlayerGui.GUI.BottomFrame.Visible = false
+    
+    
+     
+    
+
+
+
+end)
+
+local player = game.Players.LocalPlayer
+print(player.Name)
+local but = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons["Or"]:Clone()
+but.Visible  = true
+local red = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons.Rd.lock
+local blu = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons.Blu.lock
+--but.ImageColor3 = Color3.new(100, 0.7, 0)--Red, Green, Blue.
+--but.Position = UDim2.new(0, -155, 1, -320)
+but.Parent = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons
+but.MouseButton1Click:connect(function()
+    if blu.Visible == true then
+       game.ReplicatedStorage.Events.JoinTeam:FireServer("TRC") 
+    end
+   if red.Visible == true then
+        game.ReplicatedStorage.Events.JoinTeam:FireServer("TBC") 
+   end
+    
+    game.Players.LocalPlayer.Status.Team.Value = "TPC"
+    
+    game.ReplicatedStorage.Events.JoinTeam:FireServer("TRC")
+    game.ReplicatedStorage.Events.KillMe:FireServer()
+    wait(0.2)
+    game.Players.LocalPlayer.Status.Team.Value = "TOC"
+    game.Players.LocalPlayer.Status.Team.Value = "TOC"
+    
+    wait(0.3)
+    
+    
+    game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Visible = false
+    game.Players.LocalPlayer.PlayerGui.GUI.BottomFrame.Visible = false
+    
+    
+     
+    
+
+
+
+end)
+
+local player = game.Players.LocalPlayer
+print(player.Name)
+local but = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons["Ylw"]:Clone()
+but.Visible  = true
+local red = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons.Rd.lock
+local blu = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons.Blu.lock
+--but.ImageColor3 = Color3.new(100, 0.7, 0)--Red, Green, Blue.
+--but.Position = UDim2.new(0, -155, 1, -320)
+but.Parent = game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Buttons
+but.MouseButton1Click:connect(function()
+    if blu.Visible == true then
+       game.ReplicatedStorage.Events.JoinTeam:FireServer("TRC") 
+    end
+   if red.Visible == true then
+        game.ReplicatedStorage.Events.JoinTeam:FireServer("TBC") 
+   end
+    
+    game.Players.LocalPlayer.Status.Team.Value = "TPC"
+    
+    game.ReplicatedStorage.Events.JoinTeam:FireServer("TRC")
+    game.ReplicatedStorage.Events.KillMe:FireServer()
+    wait(0.2)
+    game.Players.LocalPlayer.Status.Team.Value = "TYC"
+    game.Players.LocalPlayer.Status.Team.Value = "TYC"
+    
+    wait(0.3)
+    
+    
+    game.Players.LocalPlayer.PlayerGui.GUI.TeamSelection.Visible = false
+    game.Players.LocalPlayer.PlayerGui.GUI.BottomFrame.Visible = false
+    
+    
+     
+    
+
+
+
+end)
+end)
+    
+ScriptHubS:Button("Owl Hub",function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/CriShoux/OwlHub/master/OwlHub.txt"))();
+end)
+
+ScriptHubS:Button("Infinite Yield",function()
+loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+end)
+
+ScriptHubS:Button("SimpleSpy Remote Spy",function()
+    loadstring(game:HttpGet("https://github.com/exxtremestuffs/SimpleSpySource/raw/master/SimpleSpy.lua"))()
+end)
+
+CreditSS:Label("Made By CalebB#3024")
+CreditSS:Label("Ui Lib Made By Vep#1003")
+CreditSS:Label("Right Alt To Toggle Gui")
